@@ -1,0 +1,141 @@
+
+body {
+  padding: 0px;
+  background: #fff;
+  text-align: center;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    font-family: 'Ubuntu',"Trebuchet MS",Trebuchet,Verdana,Helvetica,Arial,sans-serif;
+    font-size:12px;
+}
+
+a, a:hover{
+    color: #87C8D6;
+    text-decoration: none;   
+}
+.sep{
+    width:100%;
+    margin-top:100px;
+}
+.header{
+    width:4 00px;
+    height:80px;
+    margin:auto;
+    background:#fff;
+
+}
+
+.header .logo{
+    margin-left:auto;
+    margin-right:auto;
+    padding:10px;    
+}
+
+.header .user{
+    text-align:right;
+    vertical-align:top;
+    padding:7px;
+}
+
+.body{
+    width:400px;
+    margin:auto;
+    background:#fff;
+    clear:both;
+    background:#fff;
+    border:2px solid #d2d2d2;
+    padding:2px;
+       
+}
+
+.grid_a{
+    width:100%;
+    display:table;
+}
+
+.grid_a .grid_row{
+    display:table-row;
+}
+
+
+.grid_a .grid_header{
+    display:table-cell;
+    background: #323232;
+    color: #fff;
+    padding:5px;
+
+}
+
+.grid_a .grid_cell{
+    display:table-cell;
+    padding:8px 8px 8px 25px;
+}
+
+.to_right{
+    text-align:right;
+}
+
+.to_left{
+    text-align:left;
+}
+
+.info_message{
+    padding:10px;
+    margin:auto;
+}
+
+input{
+    background:#fff;
+    border:2px solid #a2a2a2;
+    padding:4px;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;    
+}
+
+input:hover, input:focus{
+    border:2px solid #87C8D6;
+}
+
+input[type='text'],input[type='password']{
+    width:200px;
+}
+
+.a:hover{
+    border:2px solid #87C8D6;
+}
+
+.red{
+    color:red;
+}
+
+.green{
+    color:green
+}
+
+.yellow{
+    color:yellow;
+}
+
+.radius{
+    -webkit-border-radius: 7px;
+    -moz-border-radius: 7px;
+    border-radius: 7px;
+}
+
+.radius_left{
+    -webkit-border-bottom-left-radius: 6px;
+    -moz-border-radius-bottomleft: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+.radius_right{
+    -webkit-border-bottom-right-radius: 6px;
+    -moz-border-radius-bottomright: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+
