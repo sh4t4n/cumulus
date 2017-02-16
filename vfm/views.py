@@ -5,6 +5,8 @@ import time, datetime
 import json
 
 from django.http import HttpResponse
+from django.http import JsonResponse
+
 from django.conf import settings
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -108,30 +110,33 @@ def handleUploadedFile(f,name, path):
         for chunk in f.chunks():
             destination.write(chunk)
 
-@csrf_exempt    
 def uploadFile(request):
-    status={}
+    data = {}
     if request.method == 'POST':
-        if 'fpath' in request.POST and request.POST['fpath']:
+        if request.POST['fname'] and request.POST['fpath']:
             request.FILES['fdata']
             handleUploadedFile(request.FILES['fdata'],request.POST['fname'],request.POST['fpath'])
-        else:
-            print('error')
-    else:
-        status = {"status":"err"}
-    return HttpResponse(json.dumps(status), content_type='application/json')
+            success = True
+            msg = u" <b>\"{}\" has uploaded succesfuly</b>".format(request.POST['fname'])
+    return JsonResponse(data)
 
-def createDirectory(path, dirname):
-    directory = "{}/{}".format(path, dirname)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-        success = True
-        msg = u"New folder successful created <b>\"{}\"</b>".format(dirname)
-    else:
-        success = False
-        msg = u"Folder already exist <b>\"{}\"</b>".format(dirname)
-    
-    return (success, msg)
+def createDirectory(request):        
+    data = {}
+    if request.method == 'POST':
+        if request.POST['path'] and request.POST['dirname']:
+            directory = "{}/{}".format(request.POST['path'], request.POST['dirname'])
+            abspath = "{}/{}".format(settings.COMMANDER_ROOT_DIR, directory)
+            if not os.path.exists(abspath):
+                os.makedirs(abspath)
+                success = True
+                msg = u"New folder successful created <b>\"{}\"</b>".format(request.POST['dirname'])
+            else:
+                success = False
+                msg = u"Folder already exist <b>\"{}\"</b>".format(request.POST['dirname'])
+        data = {"success":success,
+                "message":msg }
+                  
+    return JsonResponse(data)
 
 def pathGuard(request_path, base_path):
     compare = os.path.commonprefix([ os.path.abspath(request_path), base_path ])
@@ -171,22 +176,6 @@ def commander(request):
             else:        
                 for crumb in bread[1:]:
                     breadcrumb.append([crumb, "/".join(bread[:-1])])
-
-            if 'command' in request.GET and request.GET['command'] == 'mkdir':
-                
-                if 'dirname' in request.GET and request.GET['dirname']:
-                    request_dirname = "{}/{}".format(path, request.GET['dirname'])
-                    guard_request = pathGuard(request_dirname, home)
-                    
-                    if guard_request == True:
-                        status, msg = createDirectory(path, request.GET['dirname'])
-                    
-                        if status == True:
-                            success = msg
-                        else:
-                            errors = msg
-                    else:
-                        errors = u'Access denied' 
         else:
             errors = u'Access denied'
          

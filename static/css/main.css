@@ -228,7 +228,7 @@
 .progress {
 
     background: rgba(255, 255, 255, 1);
-    border: 9px solid rgba(255, 255, 255, 1); 
+    border: 8px solid rgba(255, 255, 255, 1); 
     border-radius: 4px; 
     height: 20px;
 
@@ -238,4 +238,8 @@
 .progress-label {
     float: left;
     margin-right: 1em;
+}
+
+.alert{
+    display:block;
 }

@@ -114,7 +114,8 @@ STATICFILES_DIRS = (
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = 'django.contrib.auth.views.login'
-# Bootstrap-login
+
+DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
 from django.contrib import messages
 
 MESSAGE_TAGS = {
@@ -122,5 +123,6 @@ MESSAGE_TAGS = {
             messages.WARNING: 'alert-warning warning',
             messages.ERROR: 'alert-danger error'
 }
-DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
+
+
 COMMANDER_ROOT_DIR = os.path.join(BASE_DIR, '!CLOUD!/')

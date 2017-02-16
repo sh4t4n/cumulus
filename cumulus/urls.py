@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^/?$', 'vfm.views.commander'),
     url(r'^upload/$', 'vfm.views.uploadFile'),
+    url(r'^mkdir/$', 'vfm.views.createDirectory'),
     #auth
     url(r'^login/$', 'django.contrib.auth.views.login'),
     url(r'^logout/$', 'django.contrib.auth.views.logout'),
