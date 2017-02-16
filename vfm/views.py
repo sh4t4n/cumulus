@@ -2,19 +2,18 @@
 
 import os 
 import time, datetime
-import json
 
-from django.http import HttpResponse
 from django.http import JsonResponse
-
 from django.conf import settings
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-from django.views.decorators.csrf import csrf_exempt
-
-
-
+def pathGuard(request_path, base_path):
+    compare = os.path.commonprefix([ os.path.abspath(request_path), base_path ])
+    print(compare)
+    if compare == base_path:
+        return True
+        
 def fallowPath(directory):
     files_array = []
     list_dir = []
@@ -110,40 +109,51 @@ def handleUploadedFile(f,name, path):
         for chunk in f.chunks():
             destination.write(chunk)
 
+@login_required
 def uploadFile(request):
+    username = request.user.username    
+    home = "{}{}".format(settings.COMMANDER_ROOT_DIR, username)
     data = {}
     if request.method == 'POST':
-        if request.POST['fname'] and request.POST['fpath']:
-            request.FILES['fdata']
-            handleUploadedFile(request.FILES['fdata'],request.POST['fname'],request.POST['fpath'])
-            success = True
-            msg = u" <b>\"{}\" has uploaded succesfuly</b>".format(request.POST['fname'])
+        if request.POST['fname'] and request.POST['fpath']:           
+            abspath = "{}{}".format(settings.COMMANDER_ROOT_DIR, request.POST['fpath'])
+            guard_request = pathGuard(abspath, home)
+            if guard_request == True:
+                handleUploadedFile(request.FILES['fdata'],request.POST['fname'],request.POST['fpath'])
+                success = True
+                msg = u" <b>\"{}\" has uploaded succesfuly</b>".format(request.POST['fname'])
+            
+    data = {"success":success,
+            "message":msg }
     return JsonResponse(data)
 
-def createDirectory(request):        
+@login_required
+def createDirectory(request):
+    username = request.user.username    
+    home = "{}{}".format(settings.COMMANDER_ROOT_DIR, username)
     data = {}
     if request.method == 'POST':
         if request.POST['path'] and request.POST['dirname']:
             directory = "{}/{}".format(request.POST['path'], request.POST['dirname'])
             abspath = "{}/{}".format(settings.COMMANDER_ROOT_DIR, directory)
-            if not os.path.exists(abspath):
-                os.makedirs(abspath)
-                success = True
-                msg = u"New folder successful created <b>\"{}\"</b>".format(request.POST['dirname'])
+            guard_request = pathGuard(abspath, home)
+            if guard_request == True:
+                if not os.path.exists(abspath):
+                    os.makedirs(abspath)
+                    success = True
+                    msg = u"New folder successful created <b>\"{}\"</b>".format(request.POST['dirname'])
+                else:
+                    success = False
+                    msg = u"Folder already exist <b>\"{}\"</b>".format(request.POST['dirname'])
             else:
                 success = False
-                msg = u"Folder already exist <b>\"{}\"</b>".format(request.POST['dirname'])
-        data = {"success":success,
-                "message":msg }
+                msg = "Access denied"
+                
+    data = {"success":success,
+            "message":msg }
                   
     return JsonResponse(data)
-
-def pathGuard(request_path, base_path):
-    compare = os.path.commonprefix([ os.path.abspath(request_path), base_path ])
-    print(compare)
-    if compare == base_path:
-        return True
-    
+   
 @login_required
 def commander(request):
     username = request.user.username    
@@ -177,7 +187,7 @@ def commander(request):
                 for crumb in bread[1:]:
                     breadcrumb.append([crumb, "/".join(bread[:-1])])
         else:
-            errors = u'Access denied'
+            errors = "Access denied"
          
     list_dir = fallowPath(path)
 

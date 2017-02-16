@@ -21,7 +21,7 @@ $(document).ready(function() {
     });
 
 /** File manager functions*/ 
-    // support csrftokens
+    // support for csrftokens
     function getCookie(name) {
         var cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -54,7 +54,6 @@ $(document).ready(function() {
     $("#MkdirButton").click(function(){
         var dirname = $("#DirNameInput").val();
         var path = $("#DirNameInput").attr("dir-path");
-        console.log(path + "/" + dirname);
         var formData = new FormData();
         
         formData.append("dirname", dirname);
@@ -68,13 +67,17 @@ $(document).ready(function() {
             processData: false,
             dataType: 'json',
             success: function (data) {
-                location.reload();   
+                if(data.success == false){    
+                    $("#CreateFolderAlert").addClass("alert alert-danger text-center").attr("role","dialog").html(data.message);    
+                }else{
+                    location.reload();
+                }   
             },
         });
     });        
         
 
-    // file upload
+    // File upload
     $('#UploadFileButton').change(function(event){
         event.preventDefault();
         

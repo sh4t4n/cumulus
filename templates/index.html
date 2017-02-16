@@ -70,7 +70,7 @@
                     <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a href="#" data-toggle="modal" data-target="#create-folder-modal">Folder</a></li>
+                    <li><a href="#" data-toggle="modal" data-target="#CreateFolderModal">Folder</a></li>
                 </ul>
             </div>
             
@@ -109,7 +109,7 @@
     </div>
 {% endif %}
     
-    <div id="create-folder-modal"  class="modal fade" role="dialog">
+    <div id="CreateFolderModal"  class="modal fade" role="dialog">
     	  <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -120,6 +120,8 @@
                     <div class="form-group">
                         <input type="text" id="DirNameInput" class="form-control" dir-path="{{ path|safe }}" placeholder="Folder name" required autofocus>
                     </div>
+                    <div id="CreateFolderAlert"></div>
+                    
                     <button type="button" id="MkdirButton" class="btn btn-custom btn-block">Create</button>
                 </div>
                 <div class="modal-sep"></div>
