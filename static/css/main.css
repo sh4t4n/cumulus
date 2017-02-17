@@ -202,12 +202,13 @@
 }
 
 .icon-hidden > span{
-    font-size:1.2em;
-    padding:0 5px 0 0 ;  
+    font-size:1em;
+    padding:0 5px 0 10px;  
 }
 .table-hover tbody tr:hover td a.icon-hidden{
     visibility: visible;
 }
+
 
 .fileUpload {
 	position: relative;
@@ -242,4 +243,17 @@
 
 .alert{
     display:block;
+}
+.editable{
+    position:relative !important;
+}
+.editInput{
+    width:350px;
+    height:30px;
+    padding: 0 5px 0 5px;
+    border:1px solid #eee;
+    position:absolute;
+    top:3px;
+    left: 1px;;
+    
 }

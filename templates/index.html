@@ -145,10 +145,11 @@
 {% for item in list_dir %}
             <tr class="fm-row">
                 <td>
-                    <span class="glyphicon {{ item.ico }} text-mylgrey" style="font-size:1.3em;" ></td>
-                <td><a href="./?path={{ item.rpath }}" class="{% if item.type == 0 %}link-folder{% else %}link-file{% endif %}">{{ item.fname }}</a>
-                    <a href="#" data-toggle="tooltip" data-placement="left" title="Rename" class="pull-right over-black icon-hidden">
-                        <span class="glyphicon glyphicon-pencil"></span></a</a></td>
+                    <span class="glyphicon {{ item.ico }} text-mylgrey pull-right" style="" ></td>
+                <td class="editable">                   
+                    <a href="./?path={{ item.rpath }}" class="{% if item.type == 0 %}link-folder{% else %}link-file{% endif %} editLink" path={{ path|safe }}>{{ item.fname }}</a>
+                    <a class="editButton over-black icon-hidden" data-toggle="tooltip" data-placement="right" title="Rename">
+                        <span class="glyphicon glyphicon-pencil"></span></a></td>
                 <td class="text-left">
                     <a href="#" class="over-black icon-hidden"><span class="glyphicon glyphicon-download-alt"></span>Download</a>&emsp;
                     <a href="#" class="over-black icon-hidden"><span class="glyphicon glyphicon-share-alt"></span>Share</a></td>

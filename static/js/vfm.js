@@ -76,6 +76,62 @@ $(document).ready(function() {
         });
     });        
         
+    //Rename
+    $("td a.editButton").click(function(){
+        var link = $(this).parent().find("a.editLink");
+        var hiddens = $(this).parent().parent().find("td a.icon-hidden"); 
+        
+        link.hide();
+        hiddens.hide() 
+        $(this).parent().append('<input id="EditInput" type="text" value="' + link.text() +'" class="editInput" focus>')
+        
+        var input = $("#EditInput")
+        input.focus().select();
+        
+        if(link.hasClass("link-file")){
+            if(~input.val().indexOf('.')){
+                var end = input.val().lastIndexOf('.')
+                input[0].setSelectionRange(0,end);
+            }
+        }
+                      
+        $("#EditInput").change(function(){
+            var current = link.text();
+            var rename = $(this).val()
+            var path = link.attr("path");
+            var formData = new FormData();
+            
+            formData.append("current", current);
+            formData.append("rename", rename);
+            formData.append("path", path);
+            console.log(current + " | " +  rename + "|"  + path)
+            $.ajax({
+                type: 'POST',
+                url: "/rename/",        
+                data: formData,
+                contentType: false,
+                processData: false,
+                dataType: 'json',          
+                success: function (data) {
+                    if(data.success == false){    
+                        console.log(data.message)    
+                    }else{
+                        location.reload();
+
+                    }   
+                },
+            });       
+        });
+
+        $("#EditInput").focusout(function(){
+            $(this).remove();
+            link.show();
+            hiddens.show();
+                
+        });
+        
+    });
+
 
     // File upload
     $('#UploadFileButton').change(function(event){

@@ -123,7 +123,7 @@ def uploadFile(request):
                 success = True
                 msg = u" <b>\"{}\" has uploaded succesfuly</b>".format(request.POST['fname'])
             
-    data = {"success":success,
+                data = {"success":success,
             "message":msg }
     return JsonResponse(data)
 
@@ -149,8 +149,39 @@ def createDirectory(request):
                 success = False
                 msg = "Access denied"
                 
-    data = {"success":success,
-            "message":msg }
+            data = {"success":success,
+                    "message":msg }
+                  
+    return JsonResponse(data)
+
+@login_required
+def rename(request):
+   
+    username = request.user.username    
+    home = "{}{}".format(settings.COMMANDER_ROOT_DIR, username)
+    data = {}
+    if request.method == 'POST':
+        if request.POST['path'] and request.POST['current'] and request.POST['rename']:
+            current = "{}/{}".format(request.POST['path'], request.POST['current'])
+            rename = "{}/{}".format(request.POST['path'], request.POST['rename'])
+            abs_current="{}/{}".format(settings.COMMANDER_ROOT_DIR, current)
+            abs_rename = "{}/{}".format(settings.COMMANDER_ROOT_DIR, rename)
+            guard_request_current = pathGuard(abs_current, home)
+            guard_request_rename = pathGuard(abs_rename, home)
+            if guard_request_current == True and guard_request_rename == True:
+                if os.path.exists(abs_current) and not os.path.exists(abs_rename):
+                    os.rename(abs_current, abs_rename)
+                    success = True
+                    msg = u"<b>\"{}\"</b> successful renamed to <b>\"{}\"</b>".format(request.POST['current'], request.POST['rename'])
+                else:
+                    success = False
+                    msg = u"Folder already exist <b>\"{}\"</b>".format(request.POST['rename'])
+            else:
+                success = False
+                msg = "Access denied"
+                
+                data = {"success":success,
+                        "message":msg }
                   
     return JsonResponse(data)
    
