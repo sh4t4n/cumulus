@@ -31,7 +31,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
-    'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,7 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 # project apps
     'vfm',
-# extends 
+# extends
     'bootstrap3',
 )
 
@@ -109,20 +108,11 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static/"),
-     
+
 )
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = 'django.contrib.auth.views.login'
 
-DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
-from django.contrib import messages
-
-MESSAGE_TAGS = {
-            messages.SUCCESS: 'alert-success success',
-            messages.WARNING: 'alert-warning warning',
-            messages.ERROR: 'alert-danger error'
-}
-
-
+# Absolute path to cumulus users homeself.
 COMMANDER_ROOT_DIR = os.path.join(BASE_DIR, '!CLOUD!/')

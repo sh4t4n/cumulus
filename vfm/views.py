@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os 
+import os
 import time, datetime
 
 from django.http import JsonResponse
@@ -13,7 +13,7 @@ def pathGuard(request_path, base_path):
     print(compare)
     if compare == base_path:
         return True
-        
+
 def fallowPath(directory):
     files_array = []
     list_dir = []
@@ -59,16 +59,15 @@ def fallowPath(directory):
     ["video-x-generic", "movie", "glyphicon-film"]]
 
     list = sorted(os.listdir(directory))
-    
+
     for item in list:
-        
         if not item.startswith('.'):
             path = os.path.join(directory, item)
             rpath = os.path.relpath(path, settings.COMMANDER_ROOT_DIR)
             m_time = datetime.datetime.strptime(time.ctime(os.stat(path).st_mtime), "%a %b %d %H:%M:%S %Y")
             a_time = datetime.datetime.strptime(time.ctime(os.stat(path).st_atime), "%a %b %d %H:%M:%S %Y")
             size = os.stat(path).st_size
-            
+
             if os.path.isdir(path):
                 files_array.append({"type":0,
                                     "fname":item,
@@ -78,18 +77,18 @@ def fallowPath(directory):
                                     "size":size,
                                     "mime":"",
                                     "ico":"glyphicon-folder-close"})
-                                    
+
             elif os.path.isfile(path):
                 mime = "unknown"
                 ico = "glyphicon-file"
                 ext = item.split(".")[-1].strip().lower()
-                
+
                 for e in mime2exts_list:
-                
+
                     if e[1] == ext:
                         mime = e[0]
                         ico = e[2]
-                    
+
                 files_array.append({"type":1,
                                     "fname":item,
                                     "rpath":rpath,
@@ -98,8 +97,8 @@ def fallowPath(directory):
                                     "fsize":size,
                                     "fmime":mime,
                                     "ico": ico})
-                                    
-        list_dir = sorted(files_array, key=lambda file: str(file["type"]))    
+
+        list_dir = sorted(files_array, key=lambda file: str(file["type"]))
 
     return list_dir
 
@@ -111,25 +110,25 @@ def handleUploadedFile(f,name, path):
 
 @login_required
 def uploadFile(request):
-    username = request.user.username    
+    username = request.user.username
     home = "{}{}".format(settings.COMMANDER_ROOT_DIR, username)
     data = {}
     if request.method == 'POST':
-        if request.POST['fname'] and request.POST['fpath']:           
+        if request.POST['fname'] and request.POST['fpath']:
             abspath = "{}{}".format(settings.COMMANDER_ROOT_DIR, request.POST['fpath'])
             guard_request = pathGuard(abspath, home)
             if guard_request == True:
                 handleUploadedFile(request.FILES['fdata'],request.POST['fname'],request.POST['fpath'])
                 success = True
                 msg = u" <b>\"{}\" has uploaded succesfuly</b>".format(request.POST['fname'])
-            
-                data = {"success":success,
-            "message":msg }
+
+            data = {"success":success,
+                    "message":msg }
     return JsonResponse(data)
 
 @login_required
 def createDirectory(request):
-    username = request.user.username    
+    username = request.user.username
     home = "{}{}".format(settings.COMMANDER_ROOT_DIR, username)
     data = {}
     if request.method == 'POST':
@@ -148,16 +147,16 @@ def createDirectory(request):
             else:
                 success = False
                 msg = "Access denied"
-                
+
             data = {"success":success,
                     "message":msg }
-                  
+
     return JsonResponse(data)
 
 @login_required
 def rename(request):
-   
-    username = request.user.username    
+
+    username = request.user.username
     home = "{}{}".format(settings.COMMANDER_ROOT_DIR, username)
     data = {}
     if request.method == 'POST':
@@ -179,47 +178,47 @@ def rename(request):
             else:
                 success = False
                 msg = "Access denied"
-                
-                data = {"success":success,
-                        "message":msg }
-                  
+
+            data = {"success":success,
+                    "message":msg }
+
     return JsonResponse(data)
-   
+
 @login_required
 def commander(request):
-    username = request.user.username    
+    username = request.user.username
     home = "{}{}".format(settings.COMMANDER_ROOT_DIR, username)
     trash = "{}/.Trash".format(home)
     path = home
     relative_path = "/{}".format(username)
     errors = success = info = ""
-       
+
     if not os.path.exists(home) or not os.path.isdir(home):
         os.mkdir(os.path.join(home))
-    
+
     if not os.path.exists(trash) or not os.path.isdir(trash):
         os.mkdir(os.path.join(trash))
-    
+
     breadcrumb = []
     if 'path' in request.GET and request.GET['path']:
         request_path = settings.COMMANDER_ROOT_DIR + request.GET['path']
-        guard_request = pathGuard(request_path, home)        
-        
+        guard_request = pathGuard(request_path, home)
+
         if guard_request == True:
             path = request_path
             relative_path = request.GET['path']
             bread = relative_path.split('/')
-            
+
             if bread.__len__() > 3:
                 breadcrumb.append(["...",""])
                 for crumb in bread[-2:]:
                     breadcrumb.append([crumb, "/".join(bread[:-1])])
-            else:        
+            else:
                 for crumb in bread[1:]:
                     breadcrumb.append([crumb, "/".join(bread[:-1])])
         else:
             errors = "Access denied"
-         
+
     list_dir = fallowPath(path)
 
     return render(request,'index.html',{'list_dir':list_dir,
@@ -227,4 +226,4 @@ def commander(request):
                                         'breadcrumb':breadcrumb,
                                         'errors': errors,
                                         'success':success,
-                                        'info':info}) 
+                                        'info':info})
