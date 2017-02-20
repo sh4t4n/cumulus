@@ -1,59 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-<nav class="navbar navbar-default navbar-static-top">
-    <div class="container-fluid">
-
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a href="#" class="navbar-brand">
-                <span class="glyphicon glyphicon-cloud navbar-left"></span>
-                CUMULUS
-            </a>
-        </div>
-
-
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="/" > Files <span class="sr-only">(current)</span></a></li>
-                </li>
-            </ul>
-{% if user.is_authenticated %}
-            <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        <span class="glyphicon glyphicon-user"></span>
-                        {{ user.get_username }} <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Settings</a></li>
-                        <li><a href="#" >Help</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="/logout/?next=/">Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
-{% endif %}
-        </div>
-    </div>
-</nav>
-
+{% include "nav-menu.html" %}
 <div class="container col-md-3">
     <div class="list-group">
-        <button type="button" class="list-group-item list-header active">My files</button>
-        <button type="button" class="list-group-item">Shared with me</button>
-        <button type="button" class="list-group-item">Shared with other</button>
-        <button type="button" class="list-group-item">Removed Files</button>
+        <a href="/" class="list-group-item list-header active">My files</a>
+        <button type="button" class="list-group-item disabled">Shared with me</button>
+        <button type="button" class="list-group-item disabled">Shared with other</button>
+        <a href="/trash/" class="list-group-item">Removed Files<span id="TrashCounter" class="badge"></span></a>
     </div>
 </div>
 
 <div class="container col-md-9">
     <ol class="breadcrumb" style="font-size:1.2em;">
-        <li><a href="?path={{ user.get_username }}"><span class="glyphicon glyphicon-home text-myblue"></a></li>
+        <li><a href="?path={{ user.get_username }}"><span class="glyphicon glyphicon-home text-myblue"></span></a></li>
             {% for crumb in breadcrumb  %}
                 {% if forloop.last or not crumb.1 %}
                     <li class="active">{{ crumb.0 }}</li>
@@ -142,12 +102,13 @@
             </tr>
         </thead>
         <tbody>
-{% for item in list_dir %}
+{% if list_dir %}
+    {% for item in list_dir %}
             <tr class="fm-row">
                 <td>
-                    <span class="glyphicon {{ item.ico }} text-mylgrey pull-right" style="" ></td>
+                    <span class="glyphicon {{ item.ico }} text-mylgrey pull-right"></td>
                 <td class="editable">                   
-                    <a href="./?path={{ item.rpath }}" class="{% if item.type == 0 %}link-folder{% else %}link-file{% endif %} editLink" path={{ path|safe }}>{{ item.fname }}</a>
+                    <a href="./?path={{ item.rpath }}" class="{% if item.type == 0 %}link-folder{% else %}link-file{% endif %} editLink" path="{{ path|safe }}">{{ item.fname }}</a>
                     <a class="editButton over-black icon-hidden" data-toggle="tooltip" data-placement="right" title="Rename">
                         <span class="glyphicon glyphicon-pencil"></span></a></td>
                 <td class="text-left">
@@ -155,11 +116,15 @@
                     <a href="#" class="over-black icon-hidden"><span class="glyphicon glyphicon-share-alt"></span>Share</a></td>
                 <td>{% if item.type == 1 %}{{ item.fsize|filesizeformat  }}{% endif %}</td>
                 <td>{{ item.mtime }}</td>
-                <td><a href="#" class=" over-red icon-hidden" data-toggle="tooltip" data-placement="left" title="Delete">
+                <td><a href="#" class="removeButton over-red icon-hidden" path="{{ path|safe }}" fname="{{ item.fname }}"  data-toggle="tooltip" data-placement="left" title="Remove">
                     <span class="glyphicon glyphicon-trash"></span></a></td>        
             </tr>
-{% endfor %}     
-
+    {% endfor %}     
+{% else %}
+            <tr class="fm-row">
+                <td colspan="6">This folder is empty</td>
+            </tr>
+{% endif%}
         </tbody>
     </table>
 </div>

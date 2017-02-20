@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os
+import os, shutil
 import time, datetime
 
 from django.http import JsonResponse
@@ -10,7 +10,6 @@ from django.contrib.auth.decorators import login_required
 
 def pathGuard(request_path, base_path):
     compare = os.path.commonprefix([ os.path.abspath(request_path), base_path ])
-    print(compare)
     if compare == base_path:
         return True
 
@@ -146,7 +145,7 @@ def createDirectory(request):
                     msg = u"Folder already exist <b>\"{}\"</b>".format(request.POST['dirname'])
             else:
                 success = False
-                msg = "Access denied"
+                msg = u"Access denied"
 
             data = {"success":success,
                     "message":msg }
@@ -155,7 +154,6 @@ def createDirectory(request):
 
 @login_required
 def rename(request):
-
     username = request.user.username
     home = "{}{}".format(settings.COMMANDER_ROOT_DIR, username)
     data = {}
@@ -177,7 +175,7 @@ def rename(request):
                     msg = u"Folder already exist <b>\"{}\"</b>".format(request.POST['rename'])
             else:
                 success = False
-                msg = "Access denied"
+                msg = u"Access denied"
 
             data = {"success":success,
                     "message":msg }
@@ -185,20 +183,143 @@ def rename(request):
     return JsonResponse(data)
 
 @login_required
-def commander(request):
+def moveToTrash(request):
     username = request.user.username
     home = "{}{}".format(settings.COMMANDER_ROOT_DIR, username)
     trash = "{}/.Trash".format(home)
-    path = home
-    relative_path = "/{}".format(username)
-    errors = success = info = ""
+    data = {}
+    if request.method == 'POST':
+        if request.POST['path'] and request.POST['target']:
+            target = "{}/{}".format(request.POST['path'],request.POST['target'])
+            abs_target = "{}/{}".format(settings.COMMANDER_ROOT_DIR, target)
+            abs_destination = "{}/{}".format(trash, request.POST['target'])
+            guard_request = pathGuard(abs_target,home)
+            if guard_request == True:
+                os.rename(abs_target, abs_destination)
+                success = True
+                msg = u"removed successfuly"
+            else:
+                success = False
+                msg = u"Access denied"
+            
+            data = {"success":success,
+                    "message":msg }
+    return JsonResponse(data)
 
+@login_required
+def recovery(request):
+    username = request.user.username
+    home = "{}{}".format(settings.COMMANDER_ROOT_DIR, username)
+    trash = "{}/.Trash".format(home)
+    data = {}
+    if request.method == 'POST':
+        if request.POST['path'] and request.POST['target']:
+            target = "{}/{}".format(request.POST['path'],request.POST['target'])
+            abs_target = "{}/{}".format(settings.COMMANDER_ROOT_DIR, target)
+            abs_destination = "{}/{}".format(home, request.POST['target'])
+            guard_request = pathGuard(abs_target,trash)
+            if guard_request == True:
+                os.rename(abs_target, abs_destination)
+                success = True
+                msg = u"recovered successfuly"
+            else:
+                success = False
+                msg = u"Access denied"
+            
+            data = {"success":success,
+                    "message":msg }
+    return JsonResponse(data)
+
+@login_required
+def delete(request):
+    username = request.user.username
+    home = "{}{}".format(settings.COMMANDER_ROOT_DIR, username)
+    trash = "{}/.Trash".format(home)
+    data = {}
+    if request.method == 'POST':
+        if request.POST['path'] and request.POST['target']:
+            target = "{}/{}".format(request.POST['path'],request.POST['target'])
+            abs_target = "{}/{}".format(settings.COMMANDER_ROOT_DIR, target)
+            guard_request = pathGuard(abs_target,trash)
+            if guard_request == True:
+                try:
+                    if os.path.isfile(abs_target):
+                        os.remove(abs_target)
+                    elif os.path.isdir(abs_target): 
+                        shutil.rmtree(abs_target)
+                    success = True
+                    msg = u"location permanently removed"
+                        
+                except Exception as e:               
+                    success = False
+                    msg = u"<b>sys err<b/>:\" {}\"".format(e)
+            else:
+                success = False
+                msg = u"Access denied"
+            
+            data = {"success":success,
+                    "message":msg }
+    return JsonResponse(data)
+    
+@login_required
+def cleanTrash(request):
+    username = request.user.username
+    trash = "{}/{}/.Trash".format(settings.COMMANDER_ROOT_DIR, username)
+    data = {}
+    if request.method == 'POST':
+        messages = []
+        for fname in os.listdir(trash):
+            target = os.path.abspath(os.path.join(trash, fname))
+            try:
+                if os.path.isfile(target):
+                    os.remove(target)
+                elif os.path.isdir(target): 
+                    shutil.rmtree(target)       
+            except Exception as e:               
+                err = u"<b>sys err<b/>:\" {}\"".format(e)
+                messages.append({"fname":fname,
+                                 "msg":err})
+
+        if messages.__len__() > 0:
+            data = {"success":False,
+                    "message":messages }
+        else:
+            data = {"success":True,
+                    "message":"Trash is empty" }                         
+
+    return JsonResponse(data) 
+
+@login_required
+def trashCounter(request):
+    username = request.user.username
+    trash = "{}/{}/.Trash".format(settings.COMMANDER_ROOT_DIR, username)
+    if request.method == 'POST':
+        counter = len(os.listdir(trash))
+                     
+    return JsonResponse({"files":counter})
+
+def initUserSpace(home, trash):
     if not os.path.exists(home) or not os.path.isdir(home):
         os.mkdir(os.path.join(home))
 
     if not os.path.exists(trash) or not os.path.isdir(trash):
         os.mkdir(os.path.join(trash))
+    return True
 
+@login_required
+def commander(request):
+    username = request.user.username
+    home = "{}{}".format(settings.COMMANDER_ROOT_DIR, username)
+    trash = "{}/.Trash".format(home)
+    path = home
+    relative_path = "{}/".format(username)
+    errors = success = info = ""
+
+    init_user = initUserSpace(home,trash)
+    if not init_user == True:
+        errors = "Cannot create user space. Please contact your administrator."
+        return render(request,'index.html',{"errors":errors})
+                                        
     breadcrumb = []
     if 'path' in request.GET and request.GET['path']:
         request_path = settings.COMMANDER_ROOT_DIR + request.GET['path']
@@ -221,9 +342,53 @@ def commander(request):
 
     list_dir = fallowPath(path)
 
-    return render(request,'index.html',{'list_dir':list_dir,
+    return render(request,'commander.html',{'list_dir':list_dir,
                                         'path':relative_path,
                                         'breadcrumb':breadcrumb,
                                         'errors': errors,
                                         'success':success,
                                         'info':info})
+
+@login_required
+def trashFolderView(request):
+    username = request.user.username
+    home = "{}{}".format(settings.COMMANDER_ROOT_DIR, username)
+    trash = "{}/.Trash".format(home)
+    path = trash
+    relative_path = "{}/.Trash".format(username)
+    errors = success = info = ""
+
+    init_user = initUserSpace(home,trash)
+    if not init_user == True:
+        errors = "Cannot create user space. Please contact your administrator."
+        return render(request,'index.html',{"errors":errors})
+                                        
+    breadcrumb = []
+    if 'path' in request.GET and request.GET['path']:
+        request_path = settings.COMMANDER_ROOT_DIR + request.GET['path']
+        guard_request = pathGuard(request_path, home)
+
+        if guard_request == True:
+            path = request_path
+            relative_path = request.GET['path']
+            bread = relative_path.split('/')
+
+            if bread.__len__() > 4:
+                breadcrumb.append(["...",""])
+                for crumb in bread[-2:]:
+                    breadcrumb.append([crumb, "/".join(bread[:-2])])
+            else:
+                for crumb in bread[2:]:
+                    breadcrumb.append([crumb, "/".join(bread[:-2])])
+        else:
+            errors = "Access denied"
+
+    list_dir = fallowPath(path)
+
+    return render(request,'trash.html',{'list_dir':list_dir,
+                                        'path':relative_path,
+                                        'breadcrumb':breadcrumb,
+                                        'errors': errors,
+                                        'success':success,
+                                        'info':info})
+    

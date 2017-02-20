@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "nav-menu.html" %}
+<div class="container col-md-3">
+    <div class="list-group">
+        <a href="/" class="list-group-item list-header">My files</a>
+        <button type="button" class="list-group-item disabled">Shared with me</button>
+        <button type="button" class="list-group-item disabled">Shared with other</button>
+        <a href="/trash/" class="list-group-item active">Removed Files</a>
+    </div>
+    </div>
+</div>
+
+<div class="container col-md-9">
+    <ol class="breadcrumb" style="font-size:1.2em;">
+        <li><a href="?path={{ user.get_username }}/.Trash"><span class="glyphicon glyphicon-home text-myblue"></span></a></li>
+            {% for crumb in breadcrumb  %}
+                {% if forloop.last or not crumb.1 %}
+                    <li class="active">{{ crumb.0 }}</li>
+                {% else %}
+                    <li><a href="?path={{ crumb.1 }}">{{ crumb.0 }}</a></li>
+                {% endif %}
+            {% endfor %}
+        <li>
+        {% if list_dir %}
+            <button type="button" id="CleanTrashButton" class="btn btn btn-sm btn-danger">Clean Trash</button
+        {% endif %} 
+        </li>
+    </ol>
+    <div id="UploadInfo" class="form-group">
+        <div id="UploadedFileLabel" class="progress-label"></div>  
+        <div class="progress">
+            <div id="ProgressBar" class="progress-bar progress-bar-info" 
+                role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0;">
+            </div>
+        </div>
+    </div>
+{% if errors %}
+    <div class="alert alert-danger" role="alert">
+        <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>
+        <span class="sr-only">Error:</span>
+        {{ errors|safe }}
+    </div>
+{% endif %}
+{% if success %}
+    <div class="alert alert-success" role="alert">
+        <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+        <span class="sr-only">Success:</span>
+        {{ success|safe }}
+    </div>
+{% endif %}
+{% if info %}
+    <div class="alert alert-info" role="alert">
+        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+        <span class="sr-only">Info:</span>
+        {{ info|safe }}
+    </div>
+{% endif %}
+  
+    <table id="fmTable" class="table table-hover">
+        <thead>
+            <tr>
+                <th></th>
+                <th id="a">File name</th>
+                <th></th>
+                <th>Size</th>
+                <th id="b">Modified</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+{% if list_dir %}
+    {% for item in list_dir %}
+            <tr class="fm-row">
+                <td><span class="glyphicon {{ item.ico }} text-mylgrey pull-right"></td>
+                <td style="width:50%;"><a href="./?path={{ item.rpath }}" class="{% if item.type == 0 %}link-folder{% else %}link-file{% endif %}">{{ item.fname }}</a></td>
+                <td>
+                    <a href="#" class="recoveryButton over-black icon-hidden" path="{{ path|safe }}" fname="{{ item.fname }}"><span class="glyphicon glyphicon-repeat"></span>Recover</a>
+                <td>{% if item.type == 1 %}{{ item.fsize|filesizeformat  }}{% endif %}</td>
+                <td>{{ item.atime }}</td>
+                <td><a href="#" class="deleteButton over-red icon-hidden" path="{{ path|safe }}" fname="{{ item.fname }}"  data-toggle="tooltip" data-placement="left" title="Delete">
+                    <span class="glyphicon glyphicon-trash"></span></a></td>        
+            </tr>
+    {% endfor %}
+{% else %}
+            <tr class="fm-row">
+                <td colspan="6">This folder is empty</td>
+            </tr>
+{% endif%}     
+
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+{% endblock content %}

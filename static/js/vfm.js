@@ -130,6 +130,118 @@ $(document).ready(function() {
 
     });
 
+    // move to trash
+    $('td a.removeButton').click(function(){
+        var path = $(this).attr("path");
+        var target = $(this).attr("fname");
+        var formData = new FormData();
+
+        formData.append("path", path);
+        formData.append("target", target);
+    
+        $.ajax({
+                type: 'POST',
+                url: "/remove/",
+                data: formData,
+                contentType: false,
+                processData: false,
+                dataType: 'json',
+                success: function (data) {
+                    if(data.success == true){
+                        location.reload();
+                    }else{
+                        console.log(data.message);
+                    }
+                },
+        });        
+    
+    });
+    
+    // file recovery
+    $('td a.recoveryButton').click(function(){
+        var path = $(this).attr("path");
+        var target = $(this).attr("fname");
+        var formData = new FormData();
+
+        formData.append("path", path);
+        formData.append("target", target);
+    
+        $.ajax({
+                type: 'POST',
+                url: "/recovery/",
+                data: formData,
+                contentType: false,
+                processData: false,
+                dataType: 'json',
+                success: function (data) {
+                    if(data.success == true){
+                        location.reload();
+                    }else{
+                        console.log(data.message);
+                    }
+                },
+        });        
+    
+    });
+
+    // permanently remove /delete
+    $('td a.deleteButton').click(function(){
+        var path = $(this).attr("path");
+        var target = $(this).attr("fname");
+        var formData = new FormData();
+
+        formData.append("path", path);
+        formData.append("target", target);
+    
+        $.ajax({
+                type: 'POST',
+                url: "/delete/",
+                data: formData,
+                contentType: false,
+                processData: false,
+                dataType: 'json',
+                success: function (data) {
+                    if(data.success == true){
+                        location.reload();
+                    }else{
+                        console.log(data.message);
+                    }
+                },
+        });        
+    
+    });
+
+    // Clean trash
+    $('#CleanTrashButton').click(function(){
+    
+        $.ajax({
+                type: 'POST',
+                url: "/clean-trash/",
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    if(data.success == true){
+                        console.log(data.message);
+                        location.reload();
+                    }else{
+                        for (var i = 0; i < data.message.length; i++) {
+                            console.log(data.message[i].fname + "-" + data.message[i].msg);
+                        }
+                    }
+                },
+        });        
+    
+    });
+    // Trash counter
+    $.ajax({
+            type: 'POST',
+            url: "/trash-counter/",
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                $('#TrashCounter').text(data.files)
+            },
+        });
 
     // File upload
     $('#UploadFileButton').change(function(event){
