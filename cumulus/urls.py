@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^/?$', 'vfm.views.commander'),
     url(r'^trash/?$', 'vfm.views.trashFolderView'),
     url(r'^upload/$', 'vfm.views.uploadFile'),
+    url(r'^download/$', 'vfm.views.getDownload'),
     url(r'^mkdir/$', 'vfm.views.createDirectory'),
     url(r'^rename/$', 'vfm.views.rename'),
     url(r'^remove/$', 'vfm.views.moveToTrash'),

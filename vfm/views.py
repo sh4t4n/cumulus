@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import os, shutil
+import os
+import shutil
+import tempfile, zipfile
 import time, datetime
 
-from django.http import JsonResponse
+from django.core.servers.basehttp import FileWrapper
+
+from django.http import HttpResponse, JsonResponse
 from django.conf import settings
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.utils.encoding import smart_str
 
 def pathGuard(request_path, base_path):
     compare = os.path.commonprefix([ os.path.abspath(request_path), base_path ])
@@ -297,6 +302,42 @@ def trashCounter(request):
         counter = len(os.listdir(trash))
                      
     return JsonResponse({"files":counter})
+
+def getDownload(request):
+    username = request.user.username
+    home = "{}{}".format(settings.COMMANDER_ROOT_DIR, username)
+    if request.GET['path']:
+        abs_path = "{}{}".format(settings.COMMANDER_ROOT_DIR, request.GET['path'])
+        guard_request = pathGuard(abs_path, home)
+        if guard_request == True:
+            if os.path.isfile(abs_path):
+                filename = abs_path                               
+                wrapper = FileWrapper(file(filename))
+                response = HttpResponse(wrapper, content_type='application/force-download')
+                response['Content-Disposition'] = 'attachment; filename=%s' % os.path.basename(abs_path)
+                response['Content-Length'] = os.path.getsize(filename)
+            else:
+                tmp_dir = "{}/{}/.Trash".format(settings.COMMANDER_ROOT_DIR, username)
+                temp = tempfile.NamedTemporaryFile(dir=tmp_dir, delete=True)                
+                archive = zipfile.ZipFile(temp, 'w', zipfile.ZIP_DEFLATED)
+                for foldername, subfolders, filenames in os.walk(abs_path):
+                    if foldername == abs_path:
+                         rel_folder_name = ''
+                    else:
+                        rel_folder_name = os.path.relpath(foldername, abs_path)
+                    archive.write(foldername, arcname=rel_folder_name)
+
+                    for filename in filenames:
+                        archive.write(os.path.join(foldername, filename), os.path.join(rel_folder_name, filename))
+
+                archive.close()
+
+                wrapper = FileWrapper(file(temp.name))
+                response = HttpResponse(wrapper, content_type='application/force-download')
+                response['Content-Disposition'] = 'attachment; filename=%s.zip' % smart_str(request.GET['path'])
+                response['Content-Length'] = os.path.getsize(temp.name)
+    return response            
+            
 
 def initUserSpace(home, trash):
     if not os.path.exists(home) or not os.path.isdir(home):

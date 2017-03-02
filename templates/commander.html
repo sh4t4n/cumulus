@@ -24,7 +24,7 @@
         <li>
             <div class="btn-group">
                 <button type="button" class="btn btn-sm btn-custom">
-                    <span class="glyphicon glyphicon-plus"></span> Add new</button>
+                    <span class="glyphicon glyphicon-plus"></span>Add new</button>
                 <button type="button" class="btn btn-sm dropdown-toggle btn-custom" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="caret"></span>
                     <span class="sr-only">Toggle Dropdown</span>
@@ -112,7 +112,7 @@
                     <a class="editButton over-black icon-hidden" data-toggle="tooltip" data-placement="right" title="Rename">
                         <span class="glyphicon glyphicon-pencil"></span></a></td>
                 <td class="text-left">
-                    <a href="#" class="over-black icon-hidden"><span class="glyphicon glyphicon-download-alt"></span>Download</a>&emsp;
+                    <a href="/download/?path={{ item.rpath }}" class="over-black icon-hidden"><span class="glyphicon glyphicon-download-alt"></span>Download</a>&emsp;
                     <a href="#" class="over-black icon-hidden"><span class="glyphicon glyphicon-share-alt"></span>Share</a></td>
                 <td>{% if item.type == 1 %}{{ item.fsize|filesizeformat  }}{% endif %}</td>
                 <td>{{ item.mtime }}</td>
