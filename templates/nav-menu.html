@@ -27,7 +27,9 @@
                         <span class="glyphicon glyphicon-user"></span>
                         {{ user.get_username }} <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Settings</a></li>
+                    {% if request.user.is_superuser %}
+                        <li><a href="/panel/users/">Users</a></li>
+                    {% endif %}
                         <li><a href="#" >Help</a></li>
                         <li role="separator" class="divider"></li>
                         <li><a href="/logout/?next=/">Logout</a></li>

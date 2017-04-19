@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 # project apps
     'vfm',
+    'panel',
 # extends
     'bootstrap3',
 )
@@ -89,7 +90,7 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-LANGUAGE_CODE = 'pl'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'UTC'
 
@@ -116,3 +117,44 @@ LOGIN_URL = 'django.contrib.auth.views.login'
 
 # Absolute path to cumulus users homeself.
 COMMANDER_ROOT_DIR = os.path.join(BASE_DIR, '!CLOUD!/')
+
+MIME_TYPES = [
+
+    ["application-msword", "doc", "glyphicon-file"],
+    ["application-x-ms-dos-executable", "exe", "glyphicon-cog"],
+    ["application-x-ms-dos-executable", "msi", "glyphicon-cog"],
+    ["application-ogg", "ogg", "glyphicon-music"],
+    ["application-pdf", "pdf", "glyphicon-file"],
+    ["application-postscript" ,"ps", "glyphicon-file"],
+    ["application-rdf+xml" , "rdf", "glyphicon-file"],
+    ["application-zip", "air", "glyphicon-compressed"],
+    ["application-vnd.ms-excel" ,"xls", "glyphicon-file"],
+    ["application-vnd.ms-powerpoint","ppt", "glyphicon-file"],
+    ["application-vnd.rn-realmedia","rm", "glyphicon-file"],
+    ["application-x-dvi", "dvi", "glyphicon-film"],
+    ["application-x-javascript", "js", "glyphicon-file"],
+    ["text-x-script", "sh", "glyphicon-file"],
+    ["application-x-shockwave-flash", "swf", "glyphicon-film"],
+    ["application-zip", "tar", "glyphicon-compressed"],
+    ["audio-x-wav", "wav", "glyphicon-music"],
+    ["image-x-generic", "jpg", "glyphicon-picture"],
+    ["image-x-generic", "jpeg", "glyphicon-picture"],
+    ["image-x-generic", "png", "glyphicon-picture"],
+    ["image-svg+xml", "svg", "glyphicon-picture"],
+    ["image-x-generic", "ico", "glyphicon-picture"],
+    ["text-css", "css", "glyphicon-file"],
+    ["text-html", "html", "glyphicon-file"],
+    ["text-html", "htm", "glyphicon-file"],
+    ["text-html", "xhtml", "glyphicon-file"],
+    ["text-plain", "txt", "glyphicon-file"],
+    ["text-rtf", "rtf", "glyphicon-file"],
+    ["text-sgml", "sgml", "sgm",  "glyphicon-file"],
+    ["video-x-generic", "mpg", "glyphicon-film"],
+    ["video-x-generic", "mpeg", "glyphicon-film"],
+    ["video-x-generic", "mpe", "glyphicon-film"],
+    ["video-x-generic", "mov", "glyphicon-film"],
+    ["video-x-generic", "qt", "glyphicon-film"],
+    ["video-x-generic", "m4u", "glyphicon-film"],
+    ["video-x-generic", "flv", "glyphicon-film"],
+    ["video-x-generic", "avi", "glyphicon-film"],
+    ["video-x-generic", "movie", "glyphicon-film"]]
