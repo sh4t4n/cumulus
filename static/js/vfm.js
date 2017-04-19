@@ -21,34 +21,6 @@ $(document).ready(function() {
     });
 
 /** File manager functions*/
-    // support for csrftokens
-    function getCookie(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
-    var csrftoken = getCookie('csrftoken');
-
-    function csrfSafeMethod(method) {
-        // these HTTP methods do not require CSRF protection
-            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-    });
 
     // Create directory
     $("#MkdirButton").click(function(){
@@ -83,7 +55,7 @@ $(document).ready(function() {
 
         link.hide();
         hiddens.hide()
-        $(this).parent().append('<input id="EditInput" type="text" value="' + link.text() +'" class="editInput" focus>')
+        $(this).parent().append('<input id="EditInput" type="text" value="' + link.text() +'" class="editInput form-control" focus>')
 
         var input = $("#EditInput")
         input.focus().select();
@@ -239,7 +211,10 @@ $(document).ready(function() {
             contentType: false,
             processData: false,
             success: function (data) {
-                $('#TrashCounter').text(data.files)
+                if(data.files > 0){
+                    $('#TrashCounter').text(data.files);
+                    $('#TrashCounter').show();
+                }
             },
         });
 
